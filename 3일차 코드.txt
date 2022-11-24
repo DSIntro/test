@@ -1,0 +1,64 @@
+tibble(x=1:2,y=x+2,z=3)
+
+ tribble(~x,~y,~z,
+ 4,"a",T,
+ 5,"b",F,
+ 6,"c",T)
+
+print(mpg,n=20,width=Inf)
+
+cars
+
+as_tibble(cars)
+print(as_tibble(cars),width=Inf)
+
+mtcars_tbl <- as_tibble(rownames_to_column(mtcars))
+
+as.data.frame(mpg)
+
+filter(mtcars_tbl, mpg <=30, cyl %in%c(4,6), am == 1)
+
+filter(mtcars_tbl, mpg >= median(mpg) & mpg <=quantile(mpg,0.75))
+
+arrange(mtcars_tbl, hp, desc(wt))
+
+mt <- as_tibble(rownames_to_column(mtcars))
+select(mt, rowname, cyl:qsec)
+select(mt, -rowname)
+
+mt <- as_tibble(rownames_to_column(mtcars))
+gmt <- group_by(mt, cyl)
+summarize(gmt, n=n(), mean_wt=mean(wt))
+
+m <- readLines("c:/data/statement.txt")
+
+install.packages("https://cran.r-project.org/src/contrib/Archive/KoNLP/KoNLP_0.80.2.tar.gz",repos=NULL, type="source", INSTALL_opts=c('--no-lock'))
+
+# 오류 발생 시 다음과 같이 dependencies 설치 후 다시 시도(CRAN mirror USA(TX1))
+install.packages("rJava")
+install.packages("hash")
+install.packages("tau")
+install.packages("Sejong")
+install.packages("RSQLite")
+install.packages("devtools")
+library(KoNLP)
+
+# Error: .onLoad failed in loadNamespace() for 'rJava', details:
+#  call: fun(libname, pkgname)
+#  error: JAVA_HOME cannot be determined from the Registry
+# 오류 시
+# https://www.java.com/en/download/manual.jsp 에서 java (jre-8u351-windows-x64)설치 후 다시 시도
+
+install.packages("reshape2")
+library(reshape2)
+m_df <- read_lines('c:/data/statement.txt') %>% SimplePos09 %>% melt %>% as_tibble %>% select(3, 1)
+
+m_df %>% mutate(noun=str_match(value, '([가-힣]+)/N')[,2]) %>%na.omit %>% filter(str_length(noun)>=2) %>% count(noun,sort=TRUE)
+
+wcount <- m_df %>% mutate(noun=str_match(value, '([가-힣]+)/N')[,2]) %>% na.omit %>% filter(str_length(noun)>=2) %>%count(noun, sort=TRUE)
+install.packages("wordcloud2")
+library(wordcloud2)
+wordcloud2(wcount)
+
+wcount <- m_df %>% mutate(noun=str_match(value, '([가-힣]+)/N')[,2]) %>% na.omit %>% filter(str_length(noun)>=2) %>%count(noun, sort=TRUE) %>% filter(n>=2)
+wordcloud2(wcount, fontFamily='Noto Sans CJK KR Bold',color='skyblue', minRotation=0, maxRotation=0)
