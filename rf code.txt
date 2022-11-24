@@ -1,0 +1,27 @@
+
+german = read.table("c:/data/germandata.txt",header=T)
+set.seed (1234)
+
+german$y <- factor(german$y)  # 추가가 필요한 부분
+
+i = sample (1: nrow(german ), round(nrow(german)*0.7))
+german.train = german[i,] # training data
+german.test = german[-i,] # test data
+
+threshold = 0.5
+fit.rf = randomForest(y ~ ., data = german.train , ntree =100, mtry =5,
+importance=T , na.action=na.omit)
+p.test.rf = predict(fit.rf , newdata=german.test , type="prob")[,2] #probabilities
+yhat.test.rf = ifelse(p.test.rf > threshold , levels(german$y)[2], levels(german$y)[1])
+tab = table(german.test$y , yhat.test.rf , dnn =c("Observed","Predicted"))
+print(tab) # classification table
+
+1-sum( diag(tab))/sum(tab) # misclassification rate
+
+install.packages("ROCR")  # 설치가 필요한 부분 CRAN mirror 선택 문제 발생에 유의
+library(ROCR)   # 패키지 활성화
+
+pred.rf = prediction(p.test.rf , german.test$y ); perf.rf =performance( pred.rf,"tpr","fpr")
+plot(perf.rf , lty =1, col =1, xlim =c(0,1), ylim =c(0,1), xlab ="1 Specificity",
+ylab= "Sensitivity ", main ="ROC Curve")
+lines(x = c(0, 1), y = c(0, 1), col = "grey")
